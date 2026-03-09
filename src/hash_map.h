@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define MAX_LOAD_FACTOR 0.75
+
 typedef struct {
     char *chars;
     uint32_t hash;
