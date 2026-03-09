@@ -21,16 +21,30 @@ static bool compareKey(String *a, String *b){
     return a->len == b->len && a->hash == b->hash && strncmp(a->chars, b->chars, a->len) == 0;
 }
 
+static bool isTombstone(Entry* entry){
+    return entry->key == NULL && entry->val == TOMBSTONE;
+}
+
 static Entry *findEntry(Entry *entries, const int capacity, String *key){
     if (capacity == 0){
         return NULL;
     }
-
     int index = key->hash & (capacity - 1); // hash % capacity (capacity is pow of 2)
+    Entry *tombstone = NULL;
 
     for(;;){
         Entry *entry = &entries[index];
-        if (entry->key == NULL || compareKey(entry->key, key)){
+
+        if (entry->key == NULL){
+            // actual empty bucket, if found return first tombstone
+            if (entry->val == 0){
+                return tombstone == NULL ? entry : tombstone;
+            }
+            // encountered a tombstone
+            else if (tombstone == NULL){
+                tombstone = entry;
+            }
+        } else if (compareKey(entry->key, key)){
             return entry;
         }
         
@@ -98,9 +112,9 @@ bool mapSet(Map *map, String *key, int val){
     Entry *entry = findEntry(map->entries, map->capacity, key);
     const bool isNewEntry = entry->key == NULL;
 
+    if(isNewEntry && entry->val != TOMBSTONE) map->count++;
     entry->key = key;
     entry->val = val;
-    map->count++;
 
     return isNewEntry;
 }
