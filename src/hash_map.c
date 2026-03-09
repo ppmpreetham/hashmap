@@ -1,5 +1,6 @@
 #include "./hash_map.h"
 
+#include <stddef.h> // NULL
 #include <stdlib.h> // mem alloc
 #include <string.h> // memset
 
@@ -17,6 +18,9 @@ void freeMap(Map* map){
 void growMap(Map* map, int capacity){
     Entry *entries = malloc(capacity*sizeof(Entry));
     memset(entries, 0, capacity*sizeof(Entry));
+
+    // TODO: copy and count entries from old table to new one
+    
     free(map->entries);
     map->entries = entries;
     map->capacity = capacity;

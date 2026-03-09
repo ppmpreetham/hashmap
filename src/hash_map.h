@@ -2,6 +2,7 @@
 #define HASH_MAP_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef struct {
     char *chars;
@@ -11,7 +12,7 @@ typedef struct {
 
 typedef struct {
     String *key;
-    int value;
+    int val;
 } Entry;
 
 typedef struct {
@@ -23,5 +24,11 @@ typedef struct {
 void initMap(Map *map);
 void freeMap(Map *map);
 void growMap(Map *map, int capacity);
+
+String *copyString(const char *chars);
+void freeString(String *string);
+
+bool mapSet(Map *map, String *key, int val);
+bool mapGet(Map *map, String *key, int *val);
 
 #endif
