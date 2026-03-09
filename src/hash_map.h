@@ -14,7 +14,7 @@ typedef struct {
 
 typedef struct {
     String *key;
-    int val;
+    uint64_t val;
 } Entry;
 
 typedef struct {
