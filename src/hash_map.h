@@ -6,6 +6,7 @@
 
 #define MAX_LOAD_FACTOR 0.75
 #define TOMBSTONE -1
+
 typedef struct {
     char *chars;
     uint32_t hash;
@@ -14,7 +15,7 @@ typedef struct {
 
 typedef struct {
     String *key;
-    uint64_t val;
+    int val;
 } Entry;
 
 typedef struct {
@@ -34,4 +35,5 @@ bool mapSet(Map *map, String *key, int val);
 bool mapGet(Map *map, String *key, int *val);
 
 bool mapDelete(Map *map, String *key);
+
 #endif

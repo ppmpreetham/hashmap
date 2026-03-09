@@ -18,7 +18,7 @@ void freeMap(Map* map){
 }
 
 static bool compareKey(String *a, String *b){
-    return a->len == b->len && a->hash == b->hash && strncmp(a->chars, b->chars, a->len) == 0;
+    return a->len == b->len && a->hash == b->hash && memcmp(a->chars, b->chars, a->len) == 0;
 }
 
 static bool isTombstone(Entry* entry){
@@ -48,7 +48,7 @@ static Entry *findEntry(Entry *entries, const int capacity, String *key){
             return entry;
         }
         
-        index = (index - 1) * (capacity - 1);
+        index = (index + 1) & (capacity - 1);
     }
 
 }
@@ -83,7 +83,8 @@ static uint32_t hashString(const char *chars){
     // FNV-1
     uint32_t hash = 2166136261u;
     while (*chars){
-        hash = (hash ^ (uint8_t)chars[0]*16777619);
+        hash ^= (uint8_t)*chars;
+        hash *= 16777619;
         chars++;
     }
 
@@ -112,7 +113,7 @@ bool mapSet(Map *map, String *key, int val){
     Entry *entry = findEntry(map->entries, map->capacity, key);
     const bool isNewEntry = entry->key == NULL;
 
-    if(isNewEntry && entry->val != TOMBSTONE) map->count++;
+    if (isNewEntry && !isTombstone(entry)) map->count++;
     entry->key = key;
     entry->val = val;
 
@@ -121,7 +122,8 @@ bool mapSet(Map *map, String *key, int val){
 
 bool mapGet(Map *map, String *key, int *val){
     Entry *entry = findEntry(map->entries, map->capacity, key);
-    if(entry->key == NULL){
+
+    if(entry == NULL || entry->key == NULL){
         return false;
     }
 
@@ -131,7 +133,7 @@ bool mapGet(Map *map, String *key, int *val){
 
 bool mapDelete(Map *map, String *key){
     Entry *entry = findEntry(map->entries, map->capacity, key);
-    if (entry->key == NULL){
+    if (entry == NULL || entry->key == NULL){
         return false;
     }
 
