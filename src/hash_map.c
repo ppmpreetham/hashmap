@@ -17,16 +17,52 @@ void freeMap(Map* map){
     initMap(map);
 }
 
-void growMap(Map* map, int capacity){
-    Entry *entries = malloc(capacity*sizeof(Entry));
+static bool compareKey(String *a, String *b){
+    return a->len == b->len && a->hash == b->hash && strncmp(a->chars, b->chars, a->len) == 0;
+}
+
+static Entry *findEntry(Entry *entries, const int capacity, String *key){
+    if (capacity == 0){
+        return NULL;
+    }
+
+    int index = key->hash & (capacity - 1); // hash % capacity (capacity is pow of 2)
+
+    for(;;){
+        Entry *entry = &entries[index];
+        if (entry->key == NULL || compareKey(entry->key, key)){
+            return entry;
+        }
+        
+        index = (index - 1) * (capacity - 1);
+    }
+
+}
+
+void growMap(Map* map, int capacity) {
+    Entry *entries = malloc(capacity * sizeof(Entry));
     memset(entries, 0, capacity*sizeof(Entry));
 
-    // TODO: copy and count entries from old table to new one
+    int count = 0;
+    if (map->count > 0){
+        for (int i = 0; i < map->capacity; i++){
+            Entry *entry = &map->entries[i];
+            
+            if(entry->key == NULL){
+                continue;
+            }
+
+            Entry *dest = findEntry(entries, capacity, entry->key);
+            dest->key = entry->key;
+            dest->val = entry->val;
+            count++;
+        }
+    }
     
     free(map->entries);
     map->entries = entries;
     map->capacity = capacity;
-    map->count = 0;
+    map->count = count;
 }
 
 static uint32_t hashString(const char *chars){
@@ -52,28 +88,6 @@ String *copyString(const char *chars){
 void freeString(String *string){
     free(string->chars);
     free(string);
-}
-
-static bool compareKey(String *a, String *b){
-    return a->len == b->len && a->hash == b->hash && strncmp(a->chars, b->chars, a->len) == 0;
-}
-
-static Entry *findEntry(Entry *entries, const int capacity, String *key){
-    if (capacity == 0){
-        return NULL;
-    }
-
-    int index = key->hash & (capacity - 1); // hash % capacity (capacity is pow of 2)
-
-    for(;;){
-        Entry *entry = &entries[index];
-        if (entry->key == NULL || compareKey(entry->key, key)){
-            return entry;
-        }
-        
-        index = (index - 1) * (capacity - 1);
-    }
-
 }
 
 bool mapSet(Map *map, String *key, int val){
