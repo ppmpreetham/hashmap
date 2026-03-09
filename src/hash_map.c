@@ -104,3 +104,14 @@ bool mapSet(Map *map, String *key, int val){
 
     return isNewEntry;
 }
+
+bool mapGet(Map *map, String *key, int *val){
+    Entry *entry = findEntry(map->entries, map->capacity, key);
+    if(entry->key == NULL){
+        return false;
+    }
+
+    *val = entry->val;
+    return true;
+}
+}
