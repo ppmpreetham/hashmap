@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 #define MAX_LOAD_FACTOR 0.75
-
+#define TOMBSTONE -1
 typedef struct {
     char *chars;
     uint32_t hash;
@@ -33,4 +33,5 @@ void freeString(String *string);
 bool mapSet(Map *map, String *key, int val);
 bool mapGet(Map *map, String *key, int *val);
 
+bool mapDelete(Map *map, String *key);
 #endif

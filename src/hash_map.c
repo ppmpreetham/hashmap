@@ -114,4 +114,14 @@ bool mapGet(Map *map, String *key, int *val){
     *val = entry->val;
     return true;
 }
+
+bool mapDelete(Map *map, String *key){
+    Entry *entry = findEntry(map->entries, map->capacity, key);
+    if (entry->key == NULL){
+        return false;
+    }
+
+    entry->key = NULL;
+    entry->val = TOMBSTONE;
+    return true;
 }
