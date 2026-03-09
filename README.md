@@ -7,7 +7,7 @@ Hashmap implemented using linear probing and FNV-1 hash function.
                     │
      ┌──────────────┼──────────────┐
      │              │              │
-     ▼            ▼              ▼
+     ▼              ▼              ▼
   mapSet()       mapGet()       mapDelete()
      │              │              │
      │              │              │
